@@ -3,6 +3,7 @@
 #include <sys/wait.h>
 #include <string.h> //for strlen(), strcmp()
 #include <stdlib.h> //for malloc()
+#include <stdbool.h> //for bool datatype
 
 #define PROMPT "$ "
 
@@ -33,13 +34,19 @@ char* strip(char* str){
 
 int main (){
 	char* command;
-	while(strcmp(command,"exit")!=0){
+	bool exitFlag = false;
+	while(!exitFlag){
 		printf(PROMPT);
 
 		scanf("%[^\n]",command);
 		getchar();//to discard the newline character from STDIN
+		printf("%s%s%s\n", "XXX",command,"XXX");
 		command = strip(command);
-		
+		printf("%s%s%s\n", "XXX",command,"XXX");
+
+		exitFlag = strcmp(command,"exit")==0;
+		// printf("%d\n", exitFlag);
+		free(command);
 	}
 	// int pid, i, status;
 	// printf ("main %d parent %d\n", getpid(), getppid());
