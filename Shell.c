@@ -47,16 +47,12 @@ void tokenize(char *argv[], char* command){
 	int argvCounter = 0;
 
 	for(int i=0; i<len;){
-		// printf("Setting start of arg #%d at %dth index\n", argvCounter, i);
 		argv[argvCounter++] = &command[i];
 		while(i<len && !isspace(command[i])) i++;
-		// printf("Adding a NULL Char on %dth index\n",i);
-		// printf("%c at char\n", command[i]);
 		command[i++]='\0';
 		while(i<len && isspace(command[i])) i++;
 	}
 	argv[argvCounter++]=NULL;
-	// printf("Total args: %d\n", argvCounter);
 }
 
 /*
@@ -71,8 +67,11 @@ void execute(char * argv[]){
 	//Now two threads execute simultaneously (from next line itself)
 	pid = fork();
 	assert(pid>=0);
-	if(pid == 0) //Child
-		execvp(cmd, argv);
+	if(pid == 0){ //Child
+		if(execvp(cmd, argv)==-1)
+			printf("ERROR: Cannot run the command\n");
+		exit(0);//This command will not be reached, unless there is an error
+	}
 	else //Parent (pid > 0), pid here is of the child
 		waitpid (pid, &status, 0);
 }
@@ -80,19 +79,18 @@ void execute(char * argv[]){
 int main (){
 	char command[MAXCMDSIZE];
 
-	while(strcmp(command,"exit")!=0){
+	while(true){
 		printf(PROMPT);
 
 		scanf("%[^\n]",command);
 		getchar();//to discard the newline character from STDIN		
 		strip(command);
+		if(strcmp(command,"exit")==0)
+			break;
 
 		char *argv[MAXARGS];
 		tokenize(argv, command);
-		
-		// for(int i=0; argv[i]!=NULL; i++)
-		// 	printf("%dth argument: %s\n", i,argv[i]);
-		
+				
 		execute(argv);
 	}
 	
