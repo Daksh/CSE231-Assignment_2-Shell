@@ -4,8 +4,13 @@
 int main(){
 	char* command;
 	scanf("%[^\n]",command);
-	getchar();//to discard the newline character from STDIN
-	printf("strLen: %lu\n", strlen(command));
-	printf("%d\n", command[strlen(command)]);
+	char* what;
+
+	while(strcmp(command,"exit")!=0){
+		printf("$ ");
+
+		scanf("%[^\n]",command);
+		getchar();//to discard the newline character from STDIN
+	}
 	return 0;
 }
