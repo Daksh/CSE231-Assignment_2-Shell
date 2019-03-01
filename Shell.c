@@ -59,20 +59,22 @@ void tokenize(char *argv[], char* command){
 	// printf("Total args: %d\n", argvCounter);
 }
 
-void execute(){
-	//Homework 4 code
+/*
+ * Forks a child, and runs 'execvp' in it
+ * We need this because, if we run it otherwise,
+ * it would exit after execvp is over
+ */
+void execute(char * argv[]){
+	char *cmd = argv[0];
 	int pid, i, status;
-	printf ("main %d parent %d\n", getpid(), getppid());
-	for (i = 0; i < 3; i++) {
-		pid = fork ();
-		if (pid < 0) {
-			printf ("Unable to fork\n");
-			return 0;
-		}
-		if (pid != 0)
-			waitpid (pid, &status, 0);
-	}
-	printf ("process %d (parent %d) is terminating\n", getpid(), getppid());
+
+	//Now two threads execute simultaneously (from next line itself)
+	pid = fork();
+	assert(pid>=0);
+	if(pid == 0) //Child
+		execvp(cmd, argv);
+	else //Parent (pid > 0), pid here is of the child
+		waitpid (pid, &status, 0);
 }
 
 int main (){
@@ -90,9 +92,8 @@ int main (){
 		
 		// for(int i=0; argv[i]!=NULL; i++)
 		// 	printf("%dth argument: %s\n", i,argv[i]);
-		char *cmd = argv[0];
-
-		execvp(cmd, argv);
+		
+		execute(argv);
 	}
 	
 	return 0;
