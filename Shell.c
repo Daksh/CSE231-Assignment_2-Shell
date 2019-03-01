@@ -4,6 +4,8 @@
 #include <string.h> //for strlen(), strcmp()
 #include <stdlib.h> //for malloc()
 
+#define PROMPT "$ "
+
 char* strip(char* str){
 	int len = strlen(str);
 	int startI = 0;
@@ -12,6 +14,11 @@ char* strip(char* str){
 	for(; str[endI]==' ' || str[endI]=='\n' || str[endI]=='\t'; endI--);
 	
 	int newStrLen = endI-startI+1;
+	if(newStrLen<=0){
+		char* newStr = (char*)malloc(sizeof(char));
+		newStr[0] = '\0';
+		return newStr;
+	}
 	char* newStr = (char*)malloc(sizeof(char)*newStrLen);//[endI-startI+1];
 
 	for(int i=startI; i<=endI; i++)
@@ -22,6 +29,8 @@ char* strip(char* str){
 int main (){
 	char* command;
 	while(strcmp(strip(command),"exit")!=0){
+		printf(PROMPT);
+
 		scanf("%[^\n]",command);
 		getchar();//to discard the newline character from STDIN
 		command = strip(command);
