@@ -8,17 +8,22 @@
 
 char* strip(char* str){
 	int len = strlen(str);
+
+	//Setting startI and endI to the first and last non-empty characters
 	int startI = 0;
 	int endI = len-1;
 	for(; str[startI]==' ' || str[startI]=='\t'; startI++);
 	for(; str[endI]==' ' || str[endI]=='\n' || str[endI]=='\t'; endI--);
 	
 	int newStrLen = endI-startI+1;
+	
+	//If there is nothing but spaces in the str, then we return empty string
 	if(newStrLen<=0){
 		char* newStr = (char*)malloc(sizeof(char));
 		newStr[0] = '\0';
 		return newStr;
 	}
+
 	char* newStr = (char*)malloc(sizeof(char)*newStrLen);//[endI-startI+1];
 
 	for(int i=startI; i<=endI; i++)
@@ -28,7 +33,7 @@ char* strip(char* str){
 
 int main (){
 	char* command;
-	while(strcmp(strip(command),"exit")!=0){
+	while(strcmp(command,"exit")!=0){
 		printf(PROMPT);
 
 		scanf("%[^\n]",command);
