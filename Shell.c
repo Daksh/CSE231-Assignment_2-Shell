@@ -1,6 +1,6 @@
 #include <unistd.h> //for syscalls
 #include <stdio.h> //for scanf, printf
-#include <sys/wait.h>
+#include <sys/wait.h> // waitpid
 #include <string.h> //for strlen(), strcmp()
 #include <stdlib.h> //for malloc()
 #include <stdbool.h> //for bool datatype
@@ -39,9 +39,6 @@ void strip(char* str){
 
 void tokenize(char *argv[], char* command){
 	//take care of '<', '<<', '|' and so on
-	
-	//make "dfsd fs df sd f" as one arg
-	// also ' '
 
 	int len = strlen(command);
 	int argvCounter = 0;
