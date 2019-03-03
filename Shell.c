@@ -11,6 +11,7 @@
 #define ASSERTF true
 #define MAXCMDSIZE 4096
 #define MAXARGS 20
+#define DEBUGPRINTING false
 
 void strip(char* str){
 	int len = strlen(str); //strlen gives length of string, without '\0'
@@ -73,20 +74,49 @@ void execute(char * argv[]){
 		waitpid (pid, &status, 0);
 }
 
+/*
+ * Adds a space before and after each delimiter, 
+ * so that tokenizer can recognize them separately
+ */
+void padWithSpaces(char* from, char* to){
+	int toStart = 0;
+	for(int i = 0; i <= strlen(from); i++){
+		if(from[i]=='<' || from[i]=='>' || from[i]=='|'){
+			to[toStart++] = ' ';
+			to[toStart++] = from[i++];
+			if(from[i]=='>')
+				to[toStart++] = from[i++];
+			to[toStart++] = ' ';
+		}
+		to[toStart++] = from[i];
+	}
+}
+
 int main (){
-	char command[MAXCMDSIZE];
+	//so that we can pad spaces when/where needed
+	char command[3*MAXCMDSIZE];
+	char temp[MAXCMDSIZE];
 
 	while(true){
 		printf(PROMPT);
 
-		scanf("%[^\n]",command);
+		scanf("%[^\n]",temp);
 		getchar();//to discard the newline character from STDIN		
+		padWithSpaces(temp, command);
 		strip(command);
+
 		if(strcmp(command,"exit")==0)
 			break;
 
+		if(DEBUGPRINTING) printf("Command: *(%s)*\n", command);
+
 		char *argv[MAXARGS];
 		tokenize(argv, command);
+
+		if(DEBUGPRINTING){
+			for(int i=0; argv[i]!=NULL; i++)
+				printf("ARG #%d: *(%s)*\n", i,argv[i]);			
+		}
 				
 		execute(argv);
 	}
