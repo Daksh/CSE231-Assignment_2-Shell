@@ -18,6 +18,16 @@
 #define MAXARGS 20
 #define DEBUGPRINTING true
 
+/*
+ * Prints the list of args in argv, before NULL
+ * Only works when DEBUGPRINTING is true
+ */
+void printAllArgs(char *argv[]){
+	if(DEBUGPRINTING)
+		for(int i=0; argv[i]!=NULL; i++)
+			printf("ARG #%d: *(%s)*\n", i,argv[i]);
+}
+
 void strip(char* str){
 	int len = strlen(str); //strlen gives length of string, without '\0'
 
@@ -106,10 +116,12 @@ void execute(char * argv[]){
 
 		if(argConsumed){
 			del(argv, i);
-			del(argv, i+1);
+			del(argv, i);//i+1 in the original list
 		} 
 	}
 	
+	printf("\nArguments left:\n");
+	printAllArgs(argv);
 
 	//Now two threads execute simultaneously (from next line itself)
 	pid = fork();
@@ -162,10 +174,7 @@ int main (){
 		char *argv[MAXARGS];
 		tokenize(argv, command);
 
-		if(DEBUGPRINTING){
-			for(int i=0; argv[i]!=NULL; i++)
-				printf("ARG #%d: *(%s)*\n", i,argv[i]);			
-		}
+		printAllArgs(argv);
 
 		execute(argv);
 	}
