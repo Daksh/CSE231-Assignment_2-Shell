@@ -82,7 +82,10 @@ void execute(char * argv[]){
 	for(int i=0; argv[i]!=NULL; i++){
 		bool argConsumed = true;
 		if(strcmp(argv[i],">>")==0){
+
+			//TODO: Add customized error
 			if(ASSERTF) assert(argv[i+1]!=NULL);
+			
 			close(1);
 			int fdOpened = open(argv[i+1],O_APPEND|O_CREAT);
 			if(ASSERTF) assert(fdOpened!=-1);
@@ -101,7 +104,10 @@ void execute(char * argv[]){
 			dup(fdOpened);
 		} else argConsumed = false;
 
-		if(argConsumed) del(argv, i);
+		if(argConsumed){
+			del(argv, i);
+			del(argv, i+1);
+		} 
 	}
 	
 
