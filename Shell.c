@@ -7,11 +7,26 @@
 #include <ctype.h> //isspace()
 #include <assert.h> //assertions
 
+//To open a file
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>  
+
 #define PROMPT "$ "
 #define ASSERTF true
 #define MAXCMDSIZE 4096
 #define MAXARGS 20
 #define DEBUGPRINTING false
+
+/*
+ * Prints the list of args in argv, before NULL
+ * Only works when DEBUGPRINTING is true
+ */
+void printAllArgs(char *argv[]){
+	if(DEBUGPRINTING)
+		for(int i=0; argv[i]!=NULL; i++)
+			printf("ARG #%d: *(%s)*\n", i,argv[i]);
+}
 
 void strip(char* str){
 	int len = strlen(str); //strlen gives length of string, without '\0'
@@ -54,6 +69,58 @@ void tokenize(char *argv[], char* command){
 }
 
 /*
+ * Removes the argNumber'th argument from argv
+ */
+void del(char *argv[], int argNumber){
+	for(int i=argNumber; argv[i]!=NULL; i++)
+		argv[i]=argv[i+1];
+}
+
+/* 
+
+File Descriptors Mapping
+	0 - STDIN
+	1 - STDOUT
+	2 - STDERR 
+ */
+void setRedirections(char *argv[]){
+	for(int i=0; argv[i]!=NULL; i++){
+		bool argConsumed = true;
+		if(strcmp(argv[i],">>")==0){
+
+			//TODO: Add customized error
+			if(ASSERTF) assert(argv[i+1]!=NULL);
+			
+			close(1);
+            
+            //Write only flag added in the case of append
+			int fdOpened = open(argv[i+1],O_WRONLY|O_APPEND|O_CREAT);
+			if(ASSERTF) assert(fdOpened!=-1);
+			dup(fdOpened);
+		} else if (strcmp(argv[i],">")==0){
+			if(ASSERTF) assert(argv[i+1]!=NULL);
+			close(1);
+			int fdOpened = open(argv[i+1],O_WRONLY|O_CREAT);
+			if(ASSERTF) assert(fdOpened!=-1);
+			dup(fdOpened);
+		} else if (strcmp(argv[i],"<")==0){
+			if(ASSERTF) assert(argv[i+1]!=NULL);
+			close(0);
+			int fdOpened = open(argv[i+1],O_RDONLY);
+			if(ASSERTF) assert(fdOpened!=-1);
+			dup(fdOpened);
+		} else argConsumed = false;
+
+		if(argConsumed){
+			del(argv, i);
+			del(argv, i);//i+1 in the original list
+		} 
+	}
+	if(DEBUGPRINTING)printf("\nArguments left:\n");
+	if(DEBUGPRINTING)printAllArgs(argv);
+}
+
+/*
  * Forks a child, and runs 'execvp' in it
  * We need this because, if we run it otherwise,
  * it would exit after execvp is over
@@ -61,11 +128,12 @@ void tokenize(char *argv[], char* command){
 void execute(char * argv[]){
 	char *cmd = argv[0];
 	int pid, i, status;
-
+	
 	//Now two threads execute simultaneously (from next line itself)
 	pid = fork();
 	assert(pid>=0);
 	if(pid == 0){ //Child
+		setRedirections(argv);
 		if(execvp(cmd, argv)==-1)
 			printf("ERROR: Cannot run the command\n");
 		exit(0);//This command will not be reached, unless there is an error
@@ -113,11 +181,8 @@ int main (){
 		char *argv[MAXARGS];
 		tokenize(argv, command);
 
-		if(DEBUGPRINTING){
-			for(int i=0; argv[i]!=NULL; i++)
-				printf("ARG #%d: *(%s)*\n", i,argv[i]);			
-		}
-				
+		printAllArgs(argv);
+
 		execute(argv);
 	}
 	
