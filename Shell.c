@@ -16,7 +16,7 @@
 #define ASSERTF true
 #define MAXCMDSIZE 4096
 #define MAXARGS 20
-#define DEBUGPRINTING true
+#define DEBUGPRINTING false
 
 /*
  * Prints the list of args in argv, before NULL
@@ -100,7 +100,7 @@ void setRedirections(char *argv[]){
 		} else if (strcmp(argv[i],">")==0){
 			if(ASSERTF) assert(argv[i+1]!=NULL);
 			close(1);
-			int fdOpened = open(argv[i+1],O_WRONLY|O_CREAT, 0777);
+			int fdOpened = open(argv[i+1],O_WRONLY|O_CREAT|O_TRUNC, 0777);
 			if(ASSERTF) assert(fdOpened!=-1);
 			dup(fdOpened);
 		} else if (strcmp(argv[i],"<")==0){
@@ -116,8 +116,8 @@ void setRedirections(char *argv[]){
 			del(argv, i);//i+1 in the original list
 			i-=1;
 		} 
-		if(DEBUGPRINTING)printf("\nArguments left:\n");
-		if(DEBUGPRINTING)printAllArgs(argv);
+		// if(DEBUGPRINTING)printf("\nArguments left:\n");
+		// if(DEBUGPRINTING)printAllArgs(argv);
 	}
 }
 
