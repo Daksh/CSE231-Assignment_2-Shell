@@ -1,16 +1,14 @@
 #include <stdio.h>
 #include <string.h>
+#include<sys/types.h>
+#include<sys/stat.h>
+#include <fcntl.h>  
 
 int main(){
-	char* command;
-	scanf("%[^\n]",command);
-	char* what;
-
-	while(strcmp(command,"exit")!=0){
-		printf("$ ");
-
-		scanf("%[^\n]",command);
-		getchar();//to discard the newline character from STDIN
-	}
+	// int fdOpened = open("out",O_WRONLY|O_CREAT);
+	// int fdOpened = open("out",O_RDONLY);
+	// int fdOpened = open("out",O_WRONLY|O_CREAT);
+	int fdOpened = open("out",O_APPEND|O_CREAT);
+	printf("%d\n", fdOpened);
 	return 0;
 }
