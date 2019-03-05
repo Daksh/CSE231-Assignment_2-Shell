@@ -92,7 +92,9 @@ void setRedirections(char *argv[]){
 			if(ASSERTF) assert(argv[i+1]!=NULL);
 			
 			close(1);
-			int fdOpened = open(argv[i+1],O_APPEND|O_CREAT);
+            
+            //Write only flag added in the case of append
+			int fdOpened = open(argv[i+1],O_WRONLY|O_APPEND|O_CREAT);
 			if(ASSERTF) assert(fdOpened!=-1);
 			dup(fdOpened);
 		} else if (strcmp(argv[i],">")==0){
