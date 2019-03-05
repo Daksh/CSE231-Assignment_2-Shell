@@ -16,7 +16,7 @@
 #define ASSERTF true
 #define MAXCMDSIZE 4096
 #define MAXARGS 20
-#define DEBUGPRINTING false
+#define DEBUGPRINTING true
 
 /*
  * Prints the list of args in argv, before NULL
@@ -94,19 +94,19 @@ void setRedirections(char *argv[]){
 			close(1);
             
             //Write only flag added in the case of append
-			int fdOpened = open(argv[i+1],O_WRONLY|O_APPEND|O_CREAT);
+			int fdOpened = open(argv[i+1],O_WRONLY|O_APPEND|O_CREAT, 0777);
 			if(ASSERTF) assert(fdOpened!=-1);
 			dup(fdOpened);
 		} else if (strcmp(argv[i],">")==0){
 			if(ASSERTF) assert(argv[i+1]!=NULL);
 			close(1);
-			int fdOpened = open(argv[i+1],O_WRONLY|O_CREAT);
+			int fdOpened = open(argv[i+1],O_WRONLY|O_CREAT, 0777);
 			if(ASSERTF) assert(fdOpened!=-1);
 			dup(fdOpened);
 		} else if (strcmp(argv[i],"<")==0){
 			if(ASSERTF) assert(argv[i+1]!=NULL);
 			close(0);
-			int fdOpened = open(argv[i+1],O_RDONLY);
+			int fdOpened = open(argv[i+1],O_RDONLY, 0777);
 			if(ASSERTF) assert(fdOpened!=-1);
 			dup(fdOpened);
 		} else argConsumed = false;
@@ -114,10 +114,11 @@ void setRedirections(char *argv[]){
 		if(argConsumed){
 			del(argv, i);
 			del(argv, i);//i+1 in the original list
+			i-=1;
 		} 
+		if(DEBUGPRINTING)printf("\nArguments left:\n");
+		if(DEBUGPRINTING)printAllArgs(argv);
 	}
-	if(DEBUGPRINTING)printf("\nArguments left:\n");
-	if(DEBUGPRINTING)printAllArgs(argv);
 }
 
 /*
