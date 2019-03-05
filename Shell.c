@@ -8,15 +8,15 @@
 #include <assert.h> //assertions
 
 //To open a file
-#include<sys/types.h>
-#include<sys/stat.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <fcntl.h>  
 
 #define PROMPT "$ "
 #define ASSERTF true
 #define MAXCMDSIZE 4096
 #define MAXARGS 20
-#define DEBUGPRINTING true
+#define DEBUGPRINTING false
 
 /*
  * Prints the list of args in argv, before NULL
@@ -76,19 +76,14 @@ void del(char *argv[], int argNumber){
 		argv[i]=argv[i+1];
 }
 
-/*
- * Forks a child, and runs 'execvp' in it
- * We need this because, if we run it otherwise,
- * it would exit after execvp is over
- */
-void execute(char * argv[]){
-	char *cmd = argv[0];
-	int pid, i, status;
+/* 
 
-	/* File Descriptors Mapping
-		0 - STDIN
-		1 - STDOUT
-		2 - STDERR */
+File Descriptors Mapping
+	0 - STDIN
+	1 - STDOUT
+	2 - STDERR 
+ */
+void setRedirections(char *argv[]){
 	for(int i=0; argv[i]!=NULL; i++){
 		bool argConsumed = true;
 		if(strcmp(argv[i],">>")==0){
@@ -119,14 +114,24 @@ void execute(char * argv[]){
 			del(argv, i);//i+1 in the original list
 		} 
 	}
-	
-	printf("\nArguments left:\n");
-	printAllArgs(argv);
+	if(DEBUGPRINTING)printf("\nArguments left:\n");
+	if(DEBUGPRINTING)printAllArgs(argv);
+}
 
+/*
+ * Forks a child, and runs 'execvp' in it
+ * We need this because, if we run it otherwise,
+ * it would exit after execvp is over
+ */
+void execute(char * argv[]){
+	char *cmd = argv[0];
+	int pid, i, status;
+	
 	//Now two threads execute simultaneously (from next line itself)
 	pid = fork();
 	assert(pid>=0);
 	if(pid == 0){ //Child
+		setRedirections(argv);
 		if(execvp(cmd, argv)==-1)
 			printf("ERROR: Cannot run the command\n");
 		exit(0);//This command will not be reached, unless there is an error
