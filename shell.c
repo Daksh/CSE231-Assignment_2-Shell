@@ -159,18 +159,11 @@ void execute(char * argv[]){
 	}
 
 	//Now two threads execute simultaneously (from next line itself)
-	pid = fork();
-	assert(pid>=0);
-	if(pid == 0){ //Child
-		setRedirections(argv);
-		cmd = argv[0]; // in case the first argument was a redirection, we need to reset 
+	setRedirections(argv);
+	cmd = argv[0]; // in case the first argument was a redirection, we need to reset 
 
-		if(execvp(cmd, argv)==-1)
-			printf("ERROR: Cannot run the command\n");
-		exit(0);//This command will not be reached, unless there is an error
-	}
-	else //Parent (pid > 0), pid here is of the child
-		waitpid (pid, &status, 0);
+	if(execvp(cmd, argv)==-1)
+		printf("ERROR: Cannot run the command\n");
 }
 
 /*
@@ -210,8 +203,55 @@ void executeAll(char * argv[]){
 		}
 	}
 	commands[commandCounter++]=NULL;
-	for(int i=0; commands[i]!=NULL; i++)
+	
+
+	// for(int i=0; commands[i]!=NULL; i++)
+		// execute(commands[i]);
+
+	int i,in, fd [2];
+
+	in = 0;
+
+	// for (i = 0; i < n - 1; ++i){
+	for (i = 0; commands[i+1]!=NULL; ++i){
+		pipe (fd);
+		
+		if (!fork ()){
+			if (in != 0){
+				dup2 (in, 0);
+				close (in);
+			}
+			if (fd[1] != 1){
+				dup2 (fd[1], 1);
+				close (fd[1]);
+			}
+
+			// execvp ((cmd + i)->argv [0], (char * const *)(cmd + i)->argv);
+			// execvp(commands[i][0],commands[i]);
+			execute(commands[i]);
+		}
+
+
+		close (fd [1]);
+		in = fd [0];
+	}
+
+	int pid, status;
+	pid = fork ();
+	if (pid == 0){
+
+		if (in != 0)
+			dup2 (in, 0);
+
+		// execvp(commands[i][0],commands[i]);
 		execute(commands[i]);
+		// execvp (cmd [i].argv [0], (char * const *)cmd [i].argv);
+	} else waitpid (pid, &status, 0);
+
+
+
+
+	
 }
 
 void sigintHandler(int sigNumber){
