@@ -98,7 +98,6 @@ void setRedirections(char *argv[]){
             //Write only flag added in the case of append
 			int fdOpened = open(argv[i+1],O_WRONLY|O_APPEND|O_CREAT, 0777);
 			if(ASSERTF) assert(fdOpened!=-1);
-			dup(fdOpened);
 		} else if (strcmp(argv[i],">")==0){
 			if(ASSERTF) assert(argv[i+1]!=NULL);
 			
@@ -109,12 +108,10 @@ void setRedirections(char *argv[]){
 					close(1);
 				else if(strcmp(argv[i-1],"2") == 0) //2>fname
 					close(2);	
-			}
-
-			else{	
+			} else
 				close(1);
-			}
-			int fdOpened = open(argv[i+1],O_WRONLY|O_CREAT|O_TRUNC, 0777);
+			
+      int fdOpened = open(argv[i+1],O_WRONLY|O_CREAT|O_TRUNC, 0777);
 			if(ASSERTF) assert(fdOpened!=-1);
 		
 		} else if (strcmp(argv[i],"<")==0){
@@ -122,7 +119,6 @@ void setRedirections(char *argv[]){
 			close(0);
 			int fdOpened = open(argv[i+1],O_RDONLY, 0777);
 			if(ASSERTF) assert(fdOpened!=-1);
-			dup(fdOpened);
 		} else argConsumed = false;
 
 		if(argConsumed){
@@ -150,6 +146,11 @@ void execute(char * argv[]){
 	char *cmd = argv[0];
 	int pid, i, status;
 	
+	if(strcmp(cmd,"cd")==0 || strcmp(cmd,"chdir")==0) {
+		chdir(argv[1]);
+		return;
+	}
+
 	//Now two threads execute simultaneously (from next line itself)
 	pid = fork();
 	assert(pid>=0);
