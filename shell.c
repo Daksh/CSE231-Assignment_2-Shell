@@ -16,6 +16,7 @@
 #define ASSERTF true
 #define MAXCMDSIZE 4096
 #define MAXARGS 20
+#define MAXPIPES 20
 #define DEBUGPRINTING false
 
 /*
@@ -190,6 +191,29 @@ void padWithSpaces(char* from, char* to){
 	}
 }
 
+void executeAll(char * argv[]){
+	//Last argument of argv is NULL
+
+	char** commands[MAXPIPES];
+	
+	int commandCounter = 0;
+	int argCounter = 0;
+	bool check = true;
+	for(int i=0; argv[i]!=NULL; i++){
+		if(check){
+			commands[commandCounter++] = &argv[i];
+			check = false;
+		}
+		if(argv[i][0]=='|' && argv[i][1]=='\0'){
+			check = true;
+			argv[i] = NULL;
+		}
+	}
+	commands[commandCounter++]=NULL;
+	for(int i=0; commands[i]!=NULL; i++)
+		execute(commands[i]);
+}
+
 void sigintHandler(int sigNumber){
 	printf("\n");
 	printf(PROMPT);
@@ -224,12 +248,12 @@ int main (){
 
 		if(DEBUGPRINTING) printf("Command: *(%s)*\n", command);
 
-		char *argv[MAXARGS];
+		char *argv[MAXARGS*MAXPIPES];
 		tokenize(argv, command);
 
 		printAllArgs(argv);
 
-		execute(argv);
+		executeAll(argv);
 	}
 	
 	return 0;
