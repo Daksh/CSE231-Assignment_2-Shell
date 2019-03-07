@@ -98,11 +98,17 @@ void setRedirections(char *argv[]){
 			if(ASSERTF) assert(fdOpened!=-1);
 			dup(fdOpened);
 		} else if (strcmp(argv[i],">")==0){
-			if(ASSERTF) assert(argv[i+1]!=NULL);
-			close(1);
-			int fdOpened = open(argv[i+1],O_WRONLY|O_CREAT|O_TRUNC, 0777);
-			if(ASSERTF) assert(fdOpened!=-1);
-			dup(fdOpened);
+			if( i-1>=0 && (strcmp(argv[i-1],"1") == 0)){
+
+			} else if( i-1>=0 && (strcmp(argv[i-1],"2") == 0)){
+
+			} else{
+				if(ASSERTF) assert(argv[i+1]!=NULL);
+				close(1);
+				int fdOpened = open(argv[i+1],O_WRONLY|O_CREAT|O_TRUNC, 0777);
+				if(ASSERTF) assert(fdOpened!=-1);
+				dup(fdOpened);	
+			}
 		} else if (strcmp(argv[i],"<")==0){
 			if(ASSERTF) assert(argv[i+1]!=NULL);
 			close(0);
