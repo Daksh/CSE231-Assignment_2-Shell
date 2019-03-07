@@ -96,7 +96,6 @@ void setRedirections(char *argv[]){
             //Write only flag added in the case of append
 			int fdOpened = open(argv[i+1],O_WRONLY|O_APPEND|O_CREAT, 0777);
 			if(ASSERTF) assert(fdOpened!=-1);
-			dup(fdOpened);
 		} else if (strcmp(argv[i],">")==0){
 			if( i-1>=0 && (strcmp(argv[i-1],"1") == 0)){
 
@@ -107,14 +106,12 @@ void setRedirections(char *argv[]){
 				close(1);
 				int fdOpened = open(argv[i+1],O_WRONLY|O_CREAT|O_TRUNC, 0777);
 				if(ASSERTF) assert(fdOpened!=-1);
-				dup(fdOpened);	
 			}
 		} else if (strcmp(argv[i],"<")==0){
 			if(ASSERTF) assert(argv[i+1]!=NULL);
 			close(0);
 			int fdOpened = open(argv[i+1],O_RDONLY, 0777);
 			if(ASSERTF) assert(fdOpened!=-1);
-			dup(fdOpened);
 		} else argConsumed = false;
 
 		if(argConsumed){
