@@ -5,10 +5,12 @@
 #include <fcntl.h>  
 
 int main(){
-	// int fdOpened = open("out",O_WRONLY|O_CREAT);
-	// int fdOpened = open("out",O_RDONLY);
-	// int fdOpened = open("out",O_WRONLY|O_CREAT);
-	int fdOpened = open("out",O_APPEND|O_CREAT);
-	printf("%d\n", fdOpened);
+	char temp[10000];
+	while(1){
+		temp[0]='\0';
+		scanf("%[^\n]",temp);
+		getchar();//to discard the newline character from STDIN	
+		printf("%s\n", temp);
+	}
 	return 0;
 }

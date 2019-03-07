@@ -169,9 +169,15 @@ int main (){
 	while(true){
 		printf(PROMPT);
 
+		//Take input command in temp
+		temp[0] = '\0';
 		scanf("%[^\n]",temp);
 		getchar();//to discard the newline character from STDIN		
+		
+		//Add spaces before and after delimiters
 		padWithSpaces(temp, command);
+
+		//Strip the whitespaces from start and end 
 		strip(command);
 
 		if(strcmp(command,"exit")==0)
