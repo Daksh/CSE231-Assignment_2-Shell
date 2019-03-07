@@ -143,6 +143,21 @@ void setRedirections(char *argv[]){
 	}
 }
 
+void sigintHandler(int sigNumber){
+	printf("OYEE\n");
+	signal(SIGINT, sigintHandler); 
+    fflush(stdout); 
+}
+
+void sigintHandlerWithPrompt(int sigNumber){
+	signal(SIGINT, sigintHandlerWithPrompt); 
+	printf("sigintHandler called with signal #%d\n", sigNumber);
+	printf("pid #%d ppid #%d\n", getpid(),getppid());
+	printf("\n");
+	printf(PROMPT);
+    fflush(stdout); 
+}
+
 /*
  * Forks a child, and runs 'execvp' in it
  * We need this because, if we run it otherwise,
@@ -161,6 +176,7 @@ void execute(char * argv[]){
 	pid = fork();
 	assert(pid>=0);
 	if(pid == 0){ //Child
+		signal(SIGINT, sigintHandler); 
 		setRedirections(argv);
 		cmd = argv[0]; // in case the first argument was a redirection, we need to reset 
 
@@ -190,16 +206,8 @@ void padWithSpaces(char* from, char* to){
 	}
 }
 
-void sigintHandler(int sigNumber){
-	printf("sigintHandler called with signal #%d\n", sigNumber);
-	printf("pid #%d ppid #%d\n", getpid(),getppid());
-	printf("\n");
-	printf(PROMPT);
-    fflush(stdout); 
-}
-
 int main (){
-	signal(SIGINT, sigintHandler); 
+	signal(SIGINT, sigintHandlerWithPrompt); 
 	printf("pid #%d ppid #%d\n", getpid(),getppid());
 
 	//so that we can pad spaces when/where needed
@@ -245,4 +253,5 @@ int main (){
 4. execlp - https://stackoverflow.com/a/26131243/2806163
 5. execvp - https://stackoverflow.com/a/27542113/2806163
 6. fgets (try it) - https://stackoverflow.com/a/3919126/2806163
+7. https://stackoverflow.com/questions/7861611/can-someone-explain-what-dup-in-c-does
 */

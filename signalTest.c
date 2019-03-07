@@ -11,6 +11,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>  
+
 void sigintHandler(int sigNumber){
 	// printf("sigintHandler called with signal #%d\n", sigNumber);
 	// fflush(stdout); 
@@ -19,6 +20,11 @@ void sigintHandler(int sigNumber){
 int main(){
 	signal(SIGINT, sigintHandler); 
 	int i=1;
+	if(!fork()){
+		//in child
+		signal(SIGINT, sigintHandler); 
+	}
+	//parent
 	while(1){
 		i++;
 		if(i%100000000==0) printf("%d\n", i);
