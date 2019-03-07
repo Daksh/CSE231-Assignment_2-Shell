@@ -16,7 +16,7 @@
 #define ASSERTF true
 #define MAXCMDSIZE 4096
 #define MAXARGS 20
-#define DEBUGPRINTING false
+#define DEBUGPRINTING true
 
 /*
  * Prints the list of args in argv, before NULL
@@ -77,14 +77,15 @@ void del(char *argv[], int argNumber){
 }
 
 /* 
-
-File Descriptors Mapping
-	0 - STDIN
-	1 - STDOUT
-	2 - STDERR 
+ * File Descriptors Mapping
+ *	0 - STDIN
+ *	1 - STDOUT
+ *	2 - STDERR 
  */
 void setRedirections(char *argv[]){
 	for(int i=0; argv[i]!=NULL; i++){
+		printf("setRedirections reading arg %s\n", argv[i]);
+
 		bool argConsumed = true;
 		bool numBefore = false;
 
@@ -95,12 +96,12 @@ void setRedirections(char *argv[]){
 			
 			close(1);
             
-            //Write only flag added in the case of append
 			int fdOpened = open(argv[i+1],O_WRONLY|O_APPEND|O_CREAT, 0777);
-			if(ASSERTF) assert(fdOpened!=-1);
+			assert(fdOpened!=-1);
 		} else if (strcmp(argv[i],">")==0){
 			if(ASSERTF) assert(argv[i+1]!=NULL);
 			
+			//To check which fd should be closed
 			if( i-1 >= 0 && (strcmp(argv[i-1],"1") == 0 || strcmp(argv[i-1],"2") == 0) ){
 				numBefore = true;
 
@@ -110,15 +111,29 @@ void setRedirections(char *argv[]){
 					close(2);	
 			} else
 				close(1);
+
+			if(DEBUGPRINTING) printf("check argv[i+1][0]:%c\n", argv[i+1][0]);
+			if(argv[i+1][0]=='&'){
+				if(DEBUGPRINTING) printf("the next arg is starting with &\n");
+				
+				// CANNOT ASSERT HERE, as we can be in the middle of assigning debug out
+				// if(ASSERTF) assert(argv[i+1][0]=='1' || argv[i+1][0]=='2');
+				
+				printf("%c\n", argv[i+1][1]);
+				if(argv[i+1][1]=='1')
+					printf("DUPPING 1 TO %d\n", dup(1));
+				else
+					printf("DUPPING 2 TO %d\n", dup(2));
+			} else{
+				int fdOpened = open(argv[i+1],O_WRONLY|O_CREAT|O_TRUNC, 0777);
+				assert(fdOpened!=-1);	
+			}
 			
-      int fdOpened = open(argv[i+1],O_WRONLY|O_CREAT|O_TRUNC, 0777);
-			if(ASSERTF) assert(fdOpened!=-1);
-		
 		} else if (strcmp(argv[i],"<")==0){
 			if(ASSERTF) assert(argv[i+1]!=NULL);
 			close(0);
 			int fdOpened = open(argv[i+1],O_RDONLY, 0777);
-			if(ASSERTF) assert(fdOpened!=-1);
+			assert(fdOpened!=-1);
 		} else argConsumed = false;
 
 		if(argConsumed){
@@ -205,6 +220,8 @@ int main (){
 
 		if(strcmp(command,"exit")==0)
 			break;
+		else if(command[0]=='\0') //if the string is only whitespaces
+			continue;
 
 		if(DEBUGPRINTING) printf("Command: *(%s)*\n", command);
 
