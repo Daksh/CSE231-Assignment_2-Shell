@@ -197,4 +197,9 @@ int main (){
 4. execlp - https://stackoverflow.com/a/26131243/2806163
 5. execvp - https://stackoverflow.com/a/27542113/2806163
 6. fgets (try it) - https://stackoverflow.com/a/3919126/2806163
+7. https://stackoverflow.com/a/2245212/2806163
+8. https://unix.stackexchange.com/questions/102075/why-are-666-the-default-file-creation-permissions
+9. VERY helpful - http://man7.org/linux/man-pages/man2/open.2.html
+10. https://stackoverflow.com/questions/596306/using-the-open-system-call
+11. https://www.geeksforgeeks.org/input-output-system-calls-c-create-open-close-read-write/
 */

@@ -1,0 +1,21 @@
+language: c
+sudo: false # only for faster builds
+
+
+# compiler: gcc # tests only with gcc
+
+# tests with both 
+compiler:
+  - clang
+  - gcc
+
+
+script:
+  # - gcc shell.c -o travis_gcc
+  # - ./travis_gcc_cpp
+  - make
+  - ./shell
+  # - gcov hello.c #something to do with code coverage
+
+# after_success:
+#   - bash <(curl -s https://codecov.io/bash)
