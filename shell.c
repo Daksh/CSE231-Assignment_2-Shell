@@ -190,7 +190,18 @@ void padWithSpaces(char* from, char* to){
 	}
 }
 
+void sigintHandler(int sigNumber){
+	printf("sigintHandler called with signal #%d\n", sigNumber);
+	printf("pid #%d ppid #%d\n", getpid(),getppid());
+	printf("\n");
+	printf(PROMPT);
+    fflush(stdout); 
+}
+
 int main (){
+	signal(SIGINT, sigintHandler); 
+	printf("pid #%d ppid #%d\n", getpid(),getppid());
+
 	//so that we can pad spaces when/where needed
 	char command[3*MAXCMDSIZE];
 	char temp[MAXCMDSIZE];
