@@ -210,8 +210,60 @@ void executeAll(char * argv[]){
 		}
 	}
 	commands[commandCounter++]=NULL;
-	for(int i=0; commands[i]!=NULL; i++)
+	
+	// we cannot call execute() directly
+	// it always needs to be called 
+	// in a child process
+	int fd[commandCounter][2];
+	for(int i=0; i<commandCounter; i++)
+		assert( pipe(fd[i]) == 0 );
+
+	int pipeCounter = 1;
+
+	//First command accepts the input 
+	if(!fork()){
+		//output to some pipe 0
+		close(fd[0][0]);
+		close(1);//Closing STDOUT
+		dup(fd[0][1]);
+		close(fd[0][1]);
+
+		execute(commands[0]);
+	}
+
+	int i;
+	for(i=1; commands[i+1]!=NULL; i++,pipeCounter++){
+		//for each command other than the extremes
+		
+		if(!fork()){
+			//in child
+			
+			//output to some pipe x
+			close(fd[pipeCounter][0]);
+			close(1);//Closing STDOUT
+			dup(fd[pipeCounter][1]);
+			close(fd[pipeCounter][1]);
+
+			//input from pipe x-1
+			close(fd[pipeCounter-1][1]);
+			close(0);//Closing STDIN
+			dup(fd[pipeCounter-1][0]);
+			close(fd[pipeCounter-1][0]);
+
+			execute(commands[i]);
+		}
+	}
+
+	//Last command gives the output
+	if(!fork()){
+		//input from pipe x-1
+		close(fd[pipeCounter-1][1]);
+		close(0);//Closing STDIN
+		dup(fd[pipeCounter-1][0]);
+		close(fd[pipeCounter-1][0]);
+
 		execute(commands[i]);
+	}
 }
 
 void sigintHandler(int sigNumber){
