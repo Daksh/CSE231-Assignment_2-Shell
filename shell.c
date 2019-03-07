@@ -204,15 +204,9 @@ void executeAll(char * argv[]){
 	}
 	commands[commandCounter++]=NULL;
 	
-
-	// for(int i=0; commands[i]!=NULL; i++)
-		// execute(commands[i]);
-
 	int i,in, fd [2];
-
 	in = 0;
 
-	// for (i = 0; i < n - 1; ++i){
 	for (i = 0; commands[i+1]!=NULL; ++i){
 		pipe (fd);
 		
@@ -226,12 +220,8 @@ void executeAll(char * argv[]){
 				close (fd[1]);
 			}
 
-			// execvp ((cmd + i)->argv [0], (char * const *)(cmd + i)->argv);
-			// execvp(commands[i][0],commands[i]);
 			execute(commands[i]);
 		}
-
-
 		close (fd [1]);
 		in = fd [0];
 	}
@@ -239,18 +229,10 @@ void executeAll(char * argv[]){
 	int pid, status;
 	pid = fork ();
 	if (pid == 0){
-
 		if (in != 0)
 			dup2 (in, 0);
-
-		// execvp(commands[i][0],commands[i]);
 		execute(commands[i]);
-		// execvp (cmd [i].argv [0], (char * const *)cmd [i].argv);
 	} else waitpid (pid, &status, 0);
-
-
-
-
 	
 }
 
