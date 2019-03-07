@@ -136,6 +136,11 @@ void execute(char * argv[]){
 	char *cmd = argv[0];
 	int pid, i, status;
 	
+	if(strcmp(cmd,"cd")==0 || strcmp(cmd,"chdir")==0) {
+		chdir(argv[1]);
+		return;
+	}
+
 	//Now two threads execute simultaneously (from next line itself)
 	pid = fork();
 	assert(pid>=0);
