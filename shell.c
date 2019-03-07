@@ -86,6 +86,8 @@ File Descriptors Mapping
 void setRedirections(char *argv[]){
 	for(int i=0; argv[i]!=NULL; i++){
 		bool argConsumed = true;
+		bool numBefore = false;
+
 		if(strcmp(argv[i],">>")==0){
 
 			//TODO: Add customized error
@@ -97,16 +99,21 @@ void setRedirections(char *argv[]){
 			int fdOpened = open(argv[i+1],O_WRONLY|O_APPEND|O_CREAT, 0777);
 			if(ASSERTF) assert(fdOpened!=-1);
 		} else if (strcmp(argv[i],">")==0){
-			if( i-1>=0 && (strcmp(argv[i-1],"1") == 0)){
+			if(ASSERTF) assert(argv[i+1]!=NULL);
+			
+			if( i-1 >= 0 && (strcmp(argv[i-1],"1") == 0 || strcmp(argv[i-1],"2") == 0) ){
+				numBefore = true;
 
-			} else if( i-1>=0 && (strcmp(argv[i-1],"2") == 0)){
-
-			} else{
-				if(ASSERTF) assert(argv[i+1]!=NULL);
+				if(strcmp(argv[i-1],"1") == 0) //1>fname
+					close(1);
+				else if(strcmp(argv[i-1],"2") == 0) //2>fname
+					close(2);	
+			} else
 				close(1);
-				int fdOpened = open(argv[i+1],O_WRONLY|O_CREAT|O_TRUNC, 0777);
-				if(ASSERTF) assert(fdOpened!=-1);
-			}
+			
+      int fdOpened = open(argv[i+1],O_WRONLY|O_CREAT|O_TRUNC, 0777);
+			if(ASSERTF) assert(fdOpened!=-1);
+		
 		} else if (strcmp(argv[i],"<")==0){
 			if(ASSERTF) assert(argv[i+1]!=NULL);
 			close(0);
@@ -115,6 +122,12 @@ void setRedirections(char *argv[]){
 		} else argConsumed = false;
 
 		if(argConsumed){
+			if(numBefore){
+				assert(i-1>=0);
+				i-=1;
+				del(argv,i);						
+			}
+
 			del(argv, i);
 			del(argv, i);//i+1 in the original list
 			i-=1;
@@ -143,6 +156,8 @@ void execute(char * argv[]){
 	assert(pid>=0);
 	if(pid == 0){ //Child
 		setRedirections(argv);
+		cmd = argv[0]; // in case the first argument was a redirection, we need to reset 
+
 		if(execvp(cmd, argv)==-1)
 			printf("ERROR: Cannot run the command\n");
 		exit(0);//This command will not be reached, unless there is an error
