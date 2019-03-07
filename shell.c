@@ -16,7 +16,7 @@
 #define ASSERTF true
 #define MAXCMDSIZE 4096
 #define MAXARGS 20
-#define DEBUGPRINTING true
+#define DEBUGPRINTING false
 
 /*
  * Prints the list of args in argv, before NULL
@@ -84,8 +84,6 @@ void del(char *argv[], int argNumber){
  */
 void setRedirections(char *argv[]){
 	for(int i=0; argv[i]!=NULL; i++){
-		printf("setRedirections reading arg %s\n", argv[i]);
-
 		bool argConsumed = true;
 		bool numBefore = false;
 
@@ -112,18 +110,11 @@ void setRedirections(char *argv[]){
 			} else
 				close(1);
 
-			if(DEBUGPRINTING) printf("check argv[i+1][0]:%c\n", argv[i+1][0]);
 			if(argv[i+1][0]=='&'){
-				if(DEBUGPRINTING) printf("the next arg is starting with &\n");
-				
-				// CANNOT ASSERT HERE, as we can be in the middle of assigning debug out
-				// if(ASSERTF) assert(argv[i+1][0]=='1' || argv[i+1][0]=='2');
-				
-				printf("%c\n", argv[i+1][1]);
 				if(argv[i+1][1]=='1')
-					printf("DUPPING 1 TO %d\n", dup(1));
+					dup(1);
 				else
-					printf("DUPPING 2 TO %d\n", dup(2));
+					dup(2);
 			} else{
 				int fdOpened = open(argv[i+1],O_WRONLY|O_CREAT|O_TRUNC, 0777);
 				assert(fdOpened!=-1);	
