@@ -306,4 +306,26 @@ int main (){
 4. execlp - https://stackoverflow.com/a/26131243/2806163
 5. execvp - https://stackoverflow.com/a/27542113/2806163
 6. fgets (try it) - https://stackoverflow.com/a/3919126/2806163
+7. https://docs.travis-ci.com/user/languages/c/
+8. https://travis-ci.com/
+9. https://www.google.com/search?ei=Dqx-XMn0GJXt9QOV7YbwAw&q=testing+c+code+with+python+tests&oq=testing+c+code+with+python+tests&gs_l=psy-ab.3..33i22i29i30.88085.91878..91959...0.0..0.193.4706.0j31......0....1..gws-wiz.......0i71j0i67j0i131j0j0i131i67j0i22i30.56Vw460rlWE#kpvalbx=0
+10. https://ep2016.europython.eu/media/conference/slides/writing-unit-tests-for-c-code-in-python.html
+11. http://luisquintanilla.me/2018/02/18/testing-deploying-python-projects-travisci/
+12. https://github.com/keithn/seatest
+13. https://github.com/danfis/cu
+14. https://gist.github.com/Kimundi/10d299e905941e82bee4969acc7b64a8
+15. https://github.com/rsp/travis-hello-modern-cpp
+16. https://stackoverflow.com/questions/33342663/how-to-properly-setup-travisci-for-a-simple-c-project
+17. https://github.com/alanxz/rabbitmq-c/blob/master/.travis.yml
+18. https://docs.travis-ci.com/user/languages/c/
+19. https://github.com/deftio/travis-ci-cpp-example/blob/master/makefile
+20. https://www.google.com/search?q=understanding+signal+handlers+in+c+and+what+happens+when+you+fork&oq=understanding+signal+handlers+in+c+and+what+happens+when+you+fork&aqs=chrome..69i57.10177j0j9&sourceid=chrome&ie=UTF-8
+21. https://www.geeksforgeeks.org/write-a-c-program-that-doesnt-terminate-when-ctrlc-is-pressed/
+22. https://stackoverflow.com/questions/5113545/enable-a-signal-handler-using-sigaction-in-c
+23. https://stackoverflow.com/questions/9084099/re-opening-stdout-and-stdin-file-descriptors-after-closing-them
+24. https://stackoverflow.com/questions/13495783/if-fork-what-does-it-mean
+25. https://www.quora.com/I-still-dont-understand-fork-especially-forking-multiple-times-I-dont-get-which-one-is-working-on-the-parent-or-the-child-Can-anyone-explain
+26. https://www.careercup.com/question?id=12461680
+27. https://stackoverflow.com/questions/8082932/connecting-n-commands-with-pipes-in-a-shell
+28. https://ubuntuforums.org/showthread.php?t=963686
 */
