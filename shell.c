@@ -216,7 +216,6 @@ void executeAll(char * argv[]){
 
 	//First command accepts the input 
 	if(!fork()){
-		//output to some pipe 0
 		close(fd[0]);
 		close(1);//Closing STDOUT
 		dup(fd[1]);
@@ -224,33 +223,14 @@ void executeAll(char * argv[]){
 
 		execute(commands[0]);
 	}
-	int i, status;
-	for(i=1; commands[i+1]!=NULL; i++){
-		int pid = fork();
-		if(pid == 0){
-			close(fd[0]);
-			close(1);//Closing STDOUT
-			dup(fd[1]);
-			close(fd[1]);
-
-			//input from pipe x-1
-			close(fd[1]);
-			close(0);//Closing STDIN
-			dup(fd[0]);
-			close(fd[0]);
-
-			execute(commands[i]);
-		} else waitpid (pid, &status, 0);
-	}
 	//Last command gives the output
 	if(!fork()){
-		//input from pipe
 		close(fd[1]);
 		close(0);//Closing STDIN
 		dup(fd[0]);
 		close(fd[0]);
 
-		execute(commands[i]);
+		execute(commands[1]);
 	}
 }
 
