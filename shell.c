@@ -158,19 +158,11 @@ void execute(char * argv[]){
 		return;
 	}
 
-	//Now two threads execute simultaneously (from next line itself)
-	pid = fork();
-	assert(pid>=0);
-	if(pid == 0){ //Child
-		setRedirections(argv);
-		cmd = argv[0]; // in case the first argument was a redirection, we need to reset 
+	setRedirections(argv);
+	cmd = argv[0]; // in case the first argument was a redirection, we need to reset 
 
-		if(execvp(cmd, argv)==-1)
-			printf("ERROR: Cannot run the command\n");
-		exit(0);//This command will not be reached, unless there is an error
-	}
-	else //Parent (pid > 0), pid here is of the child
-		waitpid (pid, &status, 0);
+	if(execvp(cmd, argv)==-1)
+		printf("ERROR: Cannot run the command\n");
 }
 
 /*
