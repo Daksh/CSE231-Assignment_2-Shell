@@ -202,8 +202,48 @@ void executeAll(char * argv[]){
 		}
 	}
 	commands[commandCounter++]=NULL;
-	for(int i=0; commands[i]!=NULL; i++)
-		execute(commands[i]);
+
+	int pid, status;
+	if(commands[1]==NULL){
+		pid = fork();
+		if(pid == 0)
+			execute(commands[0]);
+		else 
+			waitpid (pid, &status, 0);
+	} else{
+		int fd[2],lastIn;
+		pipe(fd);
+		lastIn = fd[0];
+
+		if(!fork()){
+			dup2(fd[1],1);
+			close(fd[1]);
+			execute(commands[0]);
+		}
+		int i;
+		for(i = 1; commands[i+1]!=NULL; i++){
+			if(!fork()){
+				
+				dup2(fd[0],0);
+				close(fd[0]);
+
+				pipe(fd);
+
+				dup2(fd[1],1);
+				close(fd[1]);
+
+				execute(commands[i]);
+
+				close(fd[1]);
+				lastIn = fd[0];
+			}
+		}
+		pid = fork();
+		if(pid == 0){
+			if(lastIn!=0) dup2(lastIn,0);
+			execute(commands[i]);
+		} else waitpid (pid, &status, 0);
+	}
 }
 
 void sigintHandler(int sigNumber){
